@@ -1,6 +1,8 @@
 import type {
   Compiler,
+  Falsy,
   ModuleFederationPluginOptions,
+  RspackPluginFunction,
   RspackPluginInstance,
 } from '@rspack/core';
 import {
@@ -37,28 +39,57 @@ export class ModuleFederationPlugin implements RspackPluginInstance {
   }
 
   private _patchBundlerConfig(compiler: Compiler): void {
-    const { name } = this._options;
+    const { name, experiments } = this._options;
+    const definePluginOptions: Record<string, string | boolean> = {};
     if (name) {
-      new compiler.webpack.DefinePlugin({
-        FEDERATION_BUILD_IDENTIFIER: JSON.stringify(
-          composeKeyWithSeparator(name, utils.getBuildVersion()),
-        ),
-      }).apply(compiler);
+      definePluginOptions['FEDERATION_BUILD_IDENTIFIER'] = JSON.stringify(
+        composeKeyWithSeparator(name, utils.getBuildVersion()),
+      );
     }
+    // Add FEDERATION_OPTIMIZE_NO_SNAPSHOT_PLUGIN
+    const disableSnapshot = experiments?.optimization?.disableSnapshot ?? false;
+    definePluginOptions['FEDERATION_OPTIMIZE_NO_SNAPSHOT_PLUGIN'] =
+      disableSnapshot;
+
+    // Determine ENV_TARGET: only if manually specified in experiments.optimization.target
+    if (
+      experiments?.optimization &&
+      typeof experiments.optimization === 'object' &&
+      experiments.optimization !== null &&
+      'target' in experiments.optimization
+    ) {
+      const manualTarget = experiments.optimization.target as
+        | 'web'
+        | 'node'
+        | undefined;
+      // Ensure the target is one of the expected values before setting
+      if (manualTarget === 'web' || manualTarget === 'node') {
+        definePluginOptions['ENV_TARGET'] = JSON.stringify(manualTarget);
+      }
+    }
+    // No inference for ENV_TARGET. If not manually set and valid, it's not defined.
+
+    new compiler.webpack.DefinePlugin(definePluginOptions).apply(compiler);
   }
 
   private _checkSingleton(compiler: Compiler): void {
     let count = 0;
-    compiler.options.plugins.forEach((p: any) => {
-      if (p.name === this.name) {
-        count++;
-        if (count > 1) {
-          throw new Error(
-            `Detect duplicate register ${this.name},please ensure ${this.name} is singleton!`,
-          );
+    compiler.options.plugins.forEach(
+      (p: Falsy | RspackPluginInstance | RspackPluginFunction) => {
+        if (typeof p !== 'object' || !p) {
+          return;
         }
-      }
-    });
+
+        if (p['name'] === this.name) {
+          count++;
+          if (count > 1) {
+            throw new Error(
+              `Detect duplicate register ${this.name},please ensure ${this.name} is singleton!`,
+            );
+          }
+        }
+      },
+    );
   }
 
   apply(compiler: Compiler): void {
@@ -77,11 +108,7 @@ export class ModuleFederationPlugin implements RspackPluginInstance {
     }
 
     // must before ModuleFederationPlugin
-    if (options.getPublicPath && options.name) {
-      new RemoteEntryPlugin(options.name, options.getPublicPath).apply(
-        compiler,
-      );
-    }
+    new RemoteEntryPlugin(options).apply(compiler);
 
     if (options.experiments?.provideExternalRuntime) {
       if (options.exposes) {
@@ -110,8 +137,10 @@ export class ModuleFederationPlugin implements RspackPluginInstance {
     let disableDts = options.dts === false;
 
     if (!disableDts) {
+      const dtsPlugin = new DtsPlugin(options);
       // @ts-ignore
-      new DtsPlugin(options).apply(compiler);
+      dtsPlugin.apply(compiler);
+      dtsPlugin.addRuntimePlugins();
     }
     if (!disableManifest && options.exposes) {
       try {
@@ -130,7 +159,7 @@ export class ModuleFederationPlugin implements RspackPluginInstance {
     ).apply(compiler);
 
     const runtimeESMPath = require.resolve(
-      '@module-federation/runtime/dist/index.esm.mjs',
+      '@module-federation/runtime/dist/index.esm.js',
       { paths: [options.implementation] },
     );
 

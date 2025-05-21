@@ -1,5 +1,46 @@
 # @module-federation/sdk
 
+## 0.14.0
+
+### Minor Changes
+
+- 82b8cac: Introduced environment-specific handling for `createScriptNode` and `loadScriptNode` functions and added build optimization options.
+
+  - Declared `ENV_TARGET` constant to differentiate between 'web' and 'node' environments.
+  - Modified `createScriptNode` and `loadScriptNode` to execute only in Node.js environment.
+    - Throws an error if attempted in a non-Node.js environment.
+  - Added logging for debugging purposes.
+  - Introduced `optimization` options in `ModuleFederationPluginOptions`.
+    - Added config for `disableSnapshot` and `target` environment optimizations.
+
+## 0.13.1
+
+## 0.13.0
+
+### Patch Changes
+
+- 38f324f: Disable live bindings on cjs builds of the runtime packages
+
+## 0.12.0
+
+### Minor Changes
+
+- c399b9a: Switch to esm modules by default
+- f4fb242: Support share layers and multiple share scopes
+
+### Patch Changes
+
+- ef96c4d: feat(dts-plugin): support exclude extract specify third party dts
+
+## 0.11.4
+
+### Patch Changes
+
+- 64a2bc1: feat(sdk): add ssrPublicPath field
+- c14842f: feat(dts-plugin): support tspc
+
+## 0.11.3
+
 ## 0.11.2
 
 ### Patch Changes

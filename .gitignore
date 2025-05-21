@@ -1,5 +1,6 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
-
+.temp-commit-msg
+update-commit-messages.sh
 # compiled output
 /dist
 /tmp
@@ -10,6 +11,7 @@
 # dependencies
 node_modules
 ./webpack-lib
+next.js
 # IDEs and editors
 /.idea
 .project
@@ -71,4 +73,13 @@ packages/enhanced/test/js
 !apps/rslib-module/@mf-types/**
 
 **/vite.config.{js,ts,mjs,mts,cjs,cts}.timestamp*
-/webpack-lib/
+
+# Federation
+**/.federation
+*.ts.timestamp*
+
+vite.config.*.timestamp*
+vitest.config.*.timestamp*
+.cursor/rules/nx-rules.mdc
+.github/instructions/nx.instructions.md
+.temp-commit-msg

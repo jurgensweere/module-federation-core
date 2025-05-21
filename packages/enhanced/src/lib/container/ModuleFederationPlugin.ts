@@ -23,6 +23,7 @@ import { RemoteEntryPlugin } from '@module-federation/rspack/remote-entry-plugin
 import { ExternalsType } from 'webpack/declarations/WebpackOptions';
 import StartupChunkDependenciesPlugin from '../startup/MfStartupChunkDependenciesPlugin';
 import FederationModulesPlugin from './runtime/FederationModulesPlugin';
+import { createSchemaValidation } from '../../utils';
 
 const isValidExternalsType = require(
   normalizeWebpackPath(
@@ -34,6 +35,16 @@ const { ExternalsPlugin } = require(
   normalizeWebpackPath('webpack'),
 ) as typeof import('webpack');
 
+const validate = createSchemaValidation(
+  //eslint-disable-next-line
+  require('../../schemas/container/ModuleFederationPlugin.check.js').validate,
+  () => require('../../schemas/container/ModuleFederationPlugin').default,
+  {
+    name: 'Module Federation Plugin',
+    baseDataPath: 'options',
+  },
+);
+
 class ModuleFederationPlugin implements WebpackPluginInstance {
   private _options: moduleFederationPlugin.ModuleFederationPluginOptions;
   private _statsPlugin?: StatsPlugin;
@@ -41,22 +52,48 @@ class ModuleFederationPlugin implements WebpackPluginInstance {
    * @param {moduleFederationPlugin.ModuleFederationPluginOptions} options options
    */
   constructor(options: moduleFederationPlugin.ModuleFederationPluginOptions) {
+    validate(options);
     this._options = options;
   }
 
   private _patchBundlerConfig(compiler: Compiler): void {
-    const { name } = this._options;
+    const { name, experiments } = this._options;
+    const definePluginOptions: Record<string, string | boolean> = {};
+
     const MFPluginNum = compiler.options.plugins.filter(
       (p): p is WebpackPluginInstance =>
         !!p && (p as any).name === 'ModuleFederationPlugin',
     ).length;
+
     if (name && MFPluginNum < 2) {
-      new compiler.webpack.DefinePlugin({
-        FEDERATION_BUILD_IDENTIFIER: JSON.stringify(
-          composeKeyWithSeparator(name, utils.getBuildVersion()),
-        ),
-      }).apply(compiler);
+      definePluginOptions['FEDERATION_BUILD_IDENTIFIER'] = JSON.stringify(
+        composeKeyWithSeparator(name, utils.getBuildVersion()),
+      );
     }
+
+    const disableSnapshot = experiments?.optimization?.disableSnapshot ?? false;
+    definePluginOptions['FEDERATION_OPTIMIZE_NO_SNAPSHOT_PLUGIN'] =
+      disableSnapshot;
+
+    // Determine ENV_TARGET: only if manually specified in experiments.optimization.target
+    if (
+      experiments?.optimization &&
+      typeof experiments.optimization === 'object' &&
+      experiments.optimization !== null &&
+      'target' in experiments.optimization
+    ) {
+      const manualTarget = experiments.optimization.target as
+        | 'web'
+        | 'node'
+        | undefined;
+      // Ensure the target is one of the expected values before setting
+      if (manualTarget === 'web' || manualTarget === 'node') {
+        definePluginOptions['ENV_TARGET'] = JSON.stringify(manualTarget);
+      }
+    }
+    // No inference for ENV_TARGET. If not manually set and valid, it's not defined.
+
+    new compiler.webpack.DefinePlugin(definePluginOptions).apply(compiler);
   }
 
   /**
@@ -67,12 +104,10 @@ class ModuleFederationPlugin implements WebpackPluginInstance {
   apply(compiler: Compiler): void {
     const { _options: options } = this;
     // must before ModuleFederationPlugin
-    if (options.getPublicPath && options.name) {
-      new RemoteEntryPlugin(options.name, options.getPublicPath).apply(
-        // @ts-ignore
-        compiler,
-      );
-    }
+    new RemoteEntryPlugin(options).apply(
+      // @ts-ignore
+      compiler,
+    );
     if (options.experiments?.provideExternalRuntime) {
       if (options.exposes) {
         throw new Error(
@@ -104,7 +139,9 @@ class ModuleFederationPlugin implements WebpackPluginInstance {
     }
 
     if (options.dts !== false) {
-      new DtsPlugin(options).apply(compiler);
+      const dtsPlugin = new DtsPlugin(options);
+      dtsPlugin.apply(compiler);
+      dtsPlugin.addRuntimePlugins();
     }
     if (options.dataPrefetch) {
       new PrefetchPlugin(options).apply(compiler);

@@ -1,5 +1,53 @@
 # @module-federation/modernjsapp
 
+## 0.1.95
+
+### Patch Changes
+
+- Updated dependencies [82b8cac]
+- Updated dependencies [0eb6697]
+  - @module-federation/enhanced@0.14.0
+
+## 0.1.94
+
+### Patch Changes
+
+- @module-federation/enhanced@0.13.1
+
+## 0.1.93
+
+### Patch Changes
+
+- 38f324f: Disable live bindings on cjs builds of the runtime packages
+- Updated dependencies [9efb9b9]
+- Updated dependencies [38f324f]
+  - @module-federation/enhanced@0.13.0
+
+## 0.1.92
+
+### Patch Changes
+
+- Updated dependencies [f4fb242]
+- Updated dependencies [f4fb242]
+- Updated dependencies [f4fb242]
+- Updated dependencies [c399b9a]
+- Updated dependencies [f4fb242]
+- Updated dependencies [f4fb242]
+  - @module-federation/enhanced@0.12.0
+
+## 0.1.91
+
+### Patch Changes
+
+- Updated dependencies [ebe7d89]
+  - @module-federation/enhanced@0.11.4
+
+## 0.1.90
+
+### Patch Changes
+
+- @module-federation/enhanced@0.11.3
+
 ## 0.1.89
 
 ### Patch Changes

@@ -1,5 +1,64 @@
 # @module-federation/bridge-vue3
 
+## 0.14.0
+
+### Patch Changes
+
+- 677aac9: vue.js has router option added to the vue3-bridge
+- Updated dependencies [82b8cac]
+- Updated dependencies [677aac9]
+  - @module-federation/sdk@0.14.0
+  - @module-federation/bridge-shared@0.14.0
+  - @module-federation/runtime@0.14.0
+
+## 0.13.1
+
+### Patch Changes
+
+- @module-federation/runtime@0.13.1
+- @module-federation/sdk@0.13.1
+- @module-federation/bridge-shared@0.13.1
+
+## 0.13.0
+
+### Patch Changes
+
+- 38f324f: Disable live bindings on cjs builds of the runtime packages
+- Updated dependencies [38f324f]
+  - @module-federation/bridge-shared@0.13.0
+  - @module-federation/runtime@0.13.0
+  - @module-federation/sdk@0.13.0
+
+## 0.12.0
+
+### Patch Changes
+
+- Updated dependencies [f4fb242]
+- Updated dependencies [c399b9a]
+- Updated dependencies [ef96c4d]
+- Updated dependencies [f4fb242]
+  - @module-federation/runtime@0.12.0
+  - @module-federation/sdk@0.12.0
+  - @module-federation/bridge-shared@0.12.0
+
+## 0.11.4
+
+### Patch Changes
+
+- Updated dependencies [64a2bc1]
+- Updated dependencies [c14842f]
+  - @module-federation/sdk@0.11.4
+  - @module-federation/runtime@0.11.4
+  - @module-federation/bridge-shared@0.11.4
+
+## 0.11.3
+
+### Patch Changes
+
+- @module-federation/runtime@0.11.3
+- @module-federation/sdk@0.11.3
+- @module-federation/bridge-shared@0.11.3
+
 ## 0.11.2
 
 ### Patch Changes

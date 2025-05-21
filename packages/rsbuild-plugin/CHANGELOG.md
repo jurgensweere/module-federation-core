@@ -1,5 +1,65 @@
 # @module-federation/rsbuild-plugin
 
+## 0.14.0
+
+### Patch Changes
+
+- 26f8a77: fix(rsbuild-plugin): detect server.cors option to check waring
+- d237ab9: fix(rsbuild-plugin): judge options from orignal userConfig
+- Updated dependencies [82b8cac]
+- Updated dependencies [82b8cac]
+- Updated dependencies [0eb6697]
+  - @module-federation/enhanced@0.14.0
+  - @module-federation/sdk@0.14.0
+
+## 0.13.1
+
+### Patch Changes
+
+- @module-federation/enhanced@0.13.1
+- @module-federation/sdk@0.13.1
+
+## 0.13.0
+
+### Patch Changes
+
+- 38f324f: Disable live bindings on cjs builds of the runtime packages
+- Updated dependencies [9efb9b9]
+- Updated dependencies [38f324f]
+  - @module-federation/enhanced@0.13.0
+  - @module-federation/sdk@0.13.0
+
+## 0.12.0
+
+### Patch Changes
+
+- Updated dependencies [f4fb242]
+- Updated dependencies [f4fb242]
+- Updated dependencies [f4fb242]
+- Updated dependencies [c399b9a]
+- Updated dependencies [ef96c4d]
+- Updated dependencies [f4fb242]
+- Updated dependencies [f4fb242]
+  - @module-federation/enhanced@0.12.0
+  - @module-federation/sdk@0.12.0
+
+## 0.11.4
+
+### Patch Changes
+
+- Updated dependencies [64a2bc1]
+- Updated dependencies [ebe7d89]
+- Updated dependencies [c14842f]
+  - @module-federation/sdk@0.11.4
+  - @module-federation/enhanced@0.11.4
+
+## 0.11.3
+
+### Patch Changes
+
+- @module-federation/enhanced@0.11.3
+- @module-federation/sdk@0.11.3
+
 ## 0.11.2
 
 ### Patch Changes
